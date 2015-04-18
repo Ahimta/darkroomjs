@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>darkroom.crop.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="darkroom.html">
+                darkroom.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.brightness.html">
+                darkroom.brightness.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.crop.html">
+                darkroom.crop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.dragndrop.html">
+                darkroom.dragndrop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.history.html">
+                darkroom.history.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.rotate.html">
+                darkroom.rotate.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.save.html">
+                darkroom.save.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.thumbnail.html">
+                darkroom.thumbnail.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.watermark.html">
+                darkroom.watermark.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.zoom.html">
+                darkroom.zoom.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>darkroom.crop.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>;(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(window, document, Darkroom, fabric)</span> </span>{
+<span class="hljs-pi">  'use strict'</span>;
+
+  <span class="hljs-keyword">var</span> CropZone = fabric.util.createClass(fabric.Rect, {
+    _render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ctx)</span> </span>{
+      <span class="hljs-keyword">this</span>.callSuper(<span class="hljs-string">'_render'</span>, ctx);
+
+      <span class="hljs-keyword">var</span> canvas = ctx.canvas;
+      <span class="hljs-keyword">var</span> dashWidth = <span class="hljs-number">7</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Set original scale</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> flipX = <span class="hljs-keyword">this</span>.flipX ? -<span class="hljs-number">1</span> : <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">var</span> flipY = <span class="hljs-keyword">this</span>.flipY ? -<span class="hljs-number">1</span> : <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">var</span> scaleX = flipX / <span class="hljs-keyword">this</span>.scaleX;
+      <span class="hljs-keyword">var</span> scaleY = flipY / <span class="hljs-keyword">this</span>.scaleY;
+
+      ctx.scale(scaleX, scaleY);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Overlay rendering</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.fillStyle = <span class="hljs-string">'rgba(0, 0, 0, 0.5)'</span>;
+      <span class="hljs-keyword">this</span>._renderOverlay(ctx);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Set dashed borders</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (ctx.setLineDash !== <span class="hljs-literal">undefined</span>)
+        ctx.setLineDash([dashWidth, dashWidth]);
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ctx.mozDash !== <span class="hljs-literal">undefined</span>)
+        ctx.mozDash = [dashWidth, dashWidth];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>First lines rendering with black</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.strokeStyle = <span class="hljs-string">'rgba(0, 0, 0, 0.2)'</span>;
+      <span class="hljs-keyword">this</span>._renderBorders(ctx);
+      <span class="hljs-keyword">this</span>._renderGrid(ctx);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Re render lines in white</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.lineDashOffset = dashWidth;
+      ctx.strokeStyle = <span class="hljs-string">'rgba(255, 255, 255, 0.4)'</span>;
+      <span class="hljs-keyword">this</span>._renderBorders(ctx);
+      <span class="hljs-keyword">this</span>._renderGrid(ctx);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Reset scale</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.scale(<span class="hljs-number">1</span>/scaleX, <span class="hljs-number">1</span>/scaleY);
+    },
+
+    _renderOverlay: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ctx)</span> </span>{
+      <span class="hljs-keyword">var</span> canvas = ctx.canvas;
+      <span class="hljs-keyword">var</span> borderOffset = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>   x0    x1        x2      x3
+y0 +————————————+
+   |\\\\\\\\\\\\|
+   |\\\\\\\\\\\\|
+y1 +———+————-+———-+
+   |\\\|         |\\\|
+   |\\\|    0    |\\\|
+   |\\\|         |\\\|
+y2 +———+————-+———-+
+   |\\\\\\\\\\\\|
+   |\\\\\\\\\\\\|
+y3 +————————————+</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+      <span class="hljs-keyword">var</span> x0 = <span class="hljs-built_in">Math</span>.ceil(-<span class="hljs-keyword">this</span>.getWidth() / <span class="hljs-number">2</span> - <span class="hljs-keyword">this</span>.getLeft());
+      <span class="hljs-keyword">var</span> x1 = <span class="hljs-built_in">Math</span>.ceil(-<span class="hljs-keyword">this</span>.getWidth() / <span class="hljs-number">2</span>);
+      <span class="hljs-keyword">var</span> x2 = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-keyword">this</span>.getWidth() / <span class="hljs-number">2</span>);
+      <span class="hljs-keyword">var</span> x3 = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-keyword">this</span>.getWidth() / <span class="hljs-number">2</span> + (canvas.width - <span class="hljs-keyword">this</span>.getWidth() - <span class="hljs-keyword">this</span>.getLeft()));
+
+      <span class="hljs-keyword">var</span> y0 = <span class="hljs-built_in">Math</span>.ceil(-<span class="hljs-keyword">this</span>.getHeight() / <span class="hljs-number">2</span> - <span class="hljs-keyword">this</span>.getTop());
+      <span class="hljs-keyword">var</span> y1 = <span class="hljs-built_in">Math</span>.ceil(-<span class="hljs-keyword">this</span>.getHeight() / <span class="hljs-number">2</span>);
+      <span class="hljs-keyword">var</span> y2 = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-keyword">this</span>.getHeight() / <span class="hljs-number">2</span>);
+      <span class="hljs-keyword">var</span> y3 = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-keyword">this</span>.getHeight() / <span class="hljs-number">2</span> + (canvas.height - <span class="hljs-keyword">this</span>.getHeight() - <span class="hljs-keyword">this</span>.getTop()));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Upper rect</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.fillRect(x0, y0, x3 - x0, y1 - y0 + borderOffset);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Left rect</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.fillRect(x0, y1, x1 - x0, y2 - y1 + borderOffset);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Right rect</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.fillRect(x2, y1, x3 - x2, y2 - y1 + borderOffset);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Down rect</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.fillRect(x0, y2, x3 - x0, y3 - y2);
+    },
+
+    _renderBorders: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ctx)</span> </span>{
+      ctx.beginPath();
+      ctx.moveTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>); <span class="hljs-comment">// upper left</span>
+      ctx.lineTo(<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>); <span class="hljs-comment">// upper right</span>
+      ctx.lineTo(<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, <span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>); <span class="hljs-comment">// down right</span>
+      ctx.lineTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, <span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>); <span class="hljs-comment">// down left</span>
+      ctx.lineTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>); <span class="hljs-comment">// upper left</span>
+      ctx.stroke();
+    },
+
+    _renderGrid: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ctx)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Vertical lines</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.beginPath();
+      ctx.moveTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span> + <span class="hljs-number">1</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getWidth(), -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>);
+      ctx.lineTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span> + <span class="hljs-number">1</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getWidth(), <span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span> + <span class="hljs-number">2</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getWidth(), -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>);
+      ctx.lineTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span> + <span class="hljs-number">2</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getWidth(), <span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span>);
+      ctx.stroke();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Horizontal lines</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ctx.beginPath();
+      ctx.moveTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span> + <span class="hljs-number">1</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getHeight());
+      ctx.lineTo(<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span> + <span class="hljs-number">1</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getHeight());
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span> + <span class="hljs-number">2</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getHeight());
+      ctx.lineTo(<span class="hljs-keyword">this</span>.getWidth()/<span class="hljs-number">2</span>, -<span class="hljs-keyword">this</span>.getHeight()/<span class="hljs-number">2</span> + <span class="hljs-number">2</span>/<span class="hljs-number">3</span> * <span class="hljs-keyword">this</span>.getHeight());
+      ctx.stroke();
+    }
+  });
+
+  Darkroom.plugins[<span class="hljs-string">'crop'</span>] = Darkroom.Plugin.extend({</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Init point</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    startX: <span class="hljs-literal">null</span>,
+    startY: <span class="hljs-literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Keycrop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    isKeyCroping: <span class="hljs-literal">false</span>,
+    isKeyLeft: <span class="hljs-literal">false</span>,
+    isKeyUp: <span class="hljs-literal">false</span>,
+
+    defaults: {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>min crop dimension</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      minHeight: <span class="hljs-number">1</span>,
+      minWidth: <span class="hljs-number">1</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>ensure crop ratio</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      ratio: <span class="hljs-literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>quick crop feature (set a key code to enable it)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      quickCropKey: <span class="hljs-literal">false</span>
+    },
+
+    initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">InitDarkroomCropPlugin</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> buttonGroup = <span class="hljs-keyword">this</span>.darkroom.toolbar.createButtonGroup();
+
+      <span class="hljs-keyword">var</span> darkroomOptions = <span class="hljs-keyword">this</span>.darkroom.options,
+          inputs          = <span class="hljs-keyword">this</span>.inputs = {};
+
+      inputs.height = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        placeholder: <span class="hljs-string">'Height'</span>,
+        style:       <span class="hljs-string">'display: none; width: 4em;'</span>,
+        title:       <span class="hljs-string">'Height'</span>,
+        type:        <span class="hljs-string">'number'</span>,
+        step:        <span class="hljs-number">10</span>,
+        min:         <span class="hljs-number">1</span>,
+        max:         darkroomOptions.maxHeight
+      });
+
+      inputs.width = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        placeholder: <span class="hljs-string">'Width'</span>,
+        style:       <span class="hljs-string">'display: none; width: 4em;'</span>,
+        title:       <span class="hljs-string">'Width'</span>,
+        type:        <span class="hljs-string">'number'</span>,
+        step:        <span class="hljs-number">10</span>,
+        min:         <span class="hljs-number">1</span>,
+        max:         darkroomOptions.maxWidth
+      });
+
+      <span class="hljs-keyword">this</span>.cropButton = buttonGroup.createButton({
+        image: <span class="hljs-string">'crop'</span>
+      });
+      <span class="hljs-keyword">this</span>.okButton = buttonGroup.createButton({
+        image: <span class="hljs-string">'accept'</span>,
+        type: <span class="hljs-string">'success'</span>,
+        hide: <span class="hljs-literal">true</span>
+      });
+      <span class="hljs-keyword">this</span>.cancelButton = buttonGroup.createButton({
+        image: <span class="hljs-string">'cancel'</span>,
+        type: <span class="hljs-string">'danger'</span>,
+        hide: <span class="hljs-literal">true</span>
+      });
+
+      buttonGroup.element.appendChild(inputs.width);
+      buttonGroup.element.appendChild(inputs.height);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Buttons click</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.cropButton.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">this</span>.toggleCrop.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.okButton.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">this</span>.cropCurrentZone.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.cancelButton.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">this</span>.releaseFocus.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Canvas events</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.darkroom.canvas.on(<span class="hljs-string">'mouse:down'</span>, <span class="hljs-keyword">this</span>.onMouseDown.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.darkroom.canvas.on(<span class="hljs-string">'mouse:move'</span>, <span class="hljs-keyword">this</span>.onMouseMove.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.darkroom.canvas.on(<span class="hljs-string">'mouse:up'</span>, <span class="hljs-keyword">this</span>.onMouseUp.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.darkroom.canvas.on(<span class="hljs-string">'object:moving'</span>, <span class="hljs-keyword">this</span>.onObjectMoving.bind(<span class="hljs-keyword">this</span>));
+      <span class="hljs-keyword">this</span>.darkroom.canvas.on(<span class="hljs-string">'object:scaling'</span>, <span class="hljs-keyword">this</span>.onObjectScaling.bind(<span class="hljs-keyword">this</span>));
+
+      fabric.util.addListener(fabric.document, <span class="hljs-string">'keydown'</span>, <span class="hljs-keyword">this</span>.onKeyDown.bind(<span class="hljs-keyword">this</span>));
+      fabric.util.addListener(fabric.document, <span class="hljs-string">'keyup'</span>, <span class="hljs-keyword">this</span>.onKeyUp.bind(<span class="hljs-keyword">this</span>));
+
+      <span class="hljs-keyword">this</span>.darkroom.addEventListener(<span class="hljs-string">'image:change'</span>, <span class="hljs-keyword">this</span>.releaseFocus.bind(<span class="hljs-keyword">this</span>));
+
+      <span class="hljs-keyword">this</span>.darkroom.addEventListener(<span class="hljs-string">'crop:update'</span>, (<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.cropZone) {
+
+          inputs.height.value = <span class="hljs-keyword">this</span>.cropZone.getHeight();
+          inputs.width.value  = <span class="hljs-keyword">this</span>.cropZone.getWidth();
+        }
+      }).bind(<span class="hljs-keyword">this</span>));
+
+      inputs.height.addEventListener(<span class="hljs-string">'input'</span>, (<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">this</span>.cropZone.setHeight(<span class="hljs-keyword">this</span>.inputs.height.value);
+        <span class="hljs-keyword">this</span>.darkroom.canvas.renderAll();
+      }).bind(<span class="hljs-keyword">this</span>));
+
+      inputs.width.addEventListener(<span class="hljs-string">'input'</span>, (<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">this</span>.cropZone.setWidth(<span class="hljs-keyword">this</span>.inputs.width.value);
+        <span class="hljs-keyword">this</span>.darkroom.canvas.renderAll();
+      }).bind(<span class="hljs-keyword">this</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Avoid crop zone to go beyond the canvas edges</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    onObjectMoving: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus()) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-keyword">var</span> currentObject = event.target;
+      <span class="hljs-keyword">if</span> (currentObject !== <span class="hljs-keyword">this</span>.cropZone)
+        <span class="hljs-keyword">return</span>;
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      <span class="hljs-keyword">var</span> x = currentObject.getLeft(), y = currentObject.getTop();
+      <span class="hljs-keyword">var</span> w = currentObject.getWidth(), h = currentObject.getHeight();
+      <span class="hljs-keyword">var</span> maxX = canvas.getWidth() - w;
+      <span class="hljs-keyword">var</span> maxY = canvas.getHeight() - h;
+
+      <span class="hljs-keyword">if</span> (x &lt; <span class="hljs-number">0</span>)
+        currentObject.set(<span class="hljs-string">'left'</span>, <span class="hljs-number">0</span>);
+      <span class="hljs-keyword">if</span> (y &lt; <span class="hljs-number">0</span>)
+        currentObject.set(<span class="hljs-string">'top'</span>, <span class="hljs-number">0</span>);
+      <span class="hljs-keyword">if</span> (x &gt; maxX)
+        currentObject.set(<span class="hljs-string">'left'</span>, maxX);
+      <span class="hljs-keyword">if</span> (y &gt; maxY)
+        currentObject.set(<span class="hljs-string">'top'</span>, maxY);
+
+      <span class="hljs-keyword">this</span>.darkroom.dispatchEvent(<span class="hljs-string">'crop:update'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Prevent crop zone from going beyond the canvas edges (like mouseMove)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    onObjectScaling: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus()) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-keyword">var</span> preventScaling = <span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">var</span> currentObject = event.target;
+      <span class="hljs-keyword">if</span> (currentObject !== <span class="hljs-keyword">this</span>.cropZone)
+        <span class="hljs-keyword">return</span>;
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      <span class="hljs-keyword">var</span> pointer = canvas.getPointer(event.e);
+      <span class="hljs-keyword">var</span> x = pointer.x;
+      <span class="hljs-keyword">var</span> y = pointer.y;
+
+      <span class="hljs-keyword">var</span> minX = currentObject.getLeft();
+      <span class="hljs-keyword">var</span> minY = currentObject.getTop();
+      <span class="hljs-keyword">var</span> maxX = currentObject.getLeft() + currentObject.getWidth();
+      <span class="hljs-keyword">var</span> maxY = currentObject.getTop() + currentObject.getHeight();
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.ratio) {
+        <span class="hljs-keyword">if</span> (minX &lt; <span class="hljs-number">0</span> || maxX &gt; canvas.getWidth() || minY &lt; <span class="hljs-number">0</span> || maxY &gt; canvas.getHeight()) {
+          preventScaling = <span class="hljs-literal">true</span>;
+        }
+      }
+
+      <span class="hljs-keyword">if</span> (minX &lt; <span class="hljs-number">0</span> || maxX &gt; canvas.getWidth() || preventScaling) {
+        <span class="hljs-keyword">var</span> lastScaleX = <span class="hljs-keyword">this</span>.lastScaleX || <span class="hljs-number">1</span>;
+        currentObject.setScaleX(lastScaleX);
+      }
+      <span class="hljs-keyword">if</span> (minX &lt; <span class="hljs-number">0</span>) {
+        currentObject.setLeft(<span class="hljs-number">0</span>);
+      }
+
+      <span class="hljs-keyword">if</span> (minY &lt; <span class="hljs-number">0</span> || maxY &gt; canvas.getHeight() || preventScaling) {
+        <span class="hljs-keyword">var</span> lastScaleY = <span class="hljs-keyword">this</span>.lastScaleY || <span class="hljs-number">1</span>;
+        currentObject.setScaleY(lastScaleY);
+      }
+      <span class="hljs-keyword">if</span> (minY &lt; <span class="hljs-number">0</span>) {
+        currentObject.setTop(<span class="hljs-number">0</span>);
+      }
+
+      <span class="hljs-keyword">if</span> (currentObject.getWidth() &lt; <span class="hljs-keyword">this</span>.options.minWidth) {
+        currentObject.scaleToWidth(<span class="hljs-keyword">this</span>.options.minWidth);
+      }
+      <span class="hljs-keyword">if</span> (currentObject.getHeight() &lt; <span class="hljs-keyword">this</span>.options.minHeight) {
+        currentObject.scaleToHeight(<span class="hljs-keyword">this</span>.options.minHeight);
+      }
+
+      <span class="hljs-keyword">this</span>.lastScaleX = currentObject.getScaleX();
+      <span class="hljs-keyword">this</span>.lastScaleY = currentObject.getScaleY();
+
+      <span class="hljs-keyword">this</span>.darkroom.dispatchEvent(<span class="hljs-string">'crop:update'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Init crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    onMouseDown: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus()) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>recalculate offset, in case canvas was manipulated since last <code>calcOffset</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      canvas.calcOffset();
+      <span class="hljs-keyword">var</span> pointer = canvas.getPointer(event.e);
+      <span class="hljs-keyword">var</span> x = pointer.x;
+      <span class="hljs-keyword">var</span> y = pointer.y;
+      <span class="hljs-keyword">var</span> point = <span class="hljs-keyword">new</span> fabric.Point(x, y);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Check if user want to scale or drag the crop zone.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> activeObject = canvas.getActiveObject();
+      <span class="hljs-keyword">if</span> (activeObject === <span class="hljs-keyword">this</span>.cropZone || <span class="hljs-keyword">this</span>.cropZone.containsPoint(point)) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      canvas.discardActiveObject();
+      <span class="hljs-keyword">this</span>.cropZone.setWidth(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setHeight(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setScaleX(<span class="hljs-number">1</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setScaleY(<span class="hljs-number">1</span>);
+
+      <span class="hljs-keyword">this</span>.startX = x;
+      <span class="hljs-keyword">this</span>.startY = y;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Extend crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    onMouseMove: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Quick crop feature</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.isKeyCroping)
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.onMouseMoveKeyCrop(event);
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === <span class="hljs-keyword">this</span>.startX || <span class="hljs-literal">null</span> === <span class="hljs-keyword">this</span>.startY) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      <span class="hljs-keyword">var</span> pointer = canvas.getPointer(event.e);
+      <span class="hljs-keyword">var</span> x = pointer.x;
+      <span class="hljs-keyword">var</span> y = pointer.y;
+
+      <span class="hljs-keyword">this</span>._renderCropZone(<span class="hljs-keyword">this</span>.startX, <span class="hljs-keyword">this</span>.startY, x, y);
+    },
+
+    onMouseMoveKeyCrop: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      <span class="hljs-keyword">var</span> zone = <span class="hljs-keyword">this</span>.cropZone;
+
+      <span class="hljs-keyword">var</span> pointer = canvas.getPointer(event.e);
+      <span class="hljs-keyword">var</span> x = pointer.x;
+      <span class="hljs-keyword">var</span> y = pointer.y;
+
+      <span class="hljs-keyword">if</span> (!zone.left || !zone.top) {
+        zone.setTop(y);
+        zone.setLeft(x);
+      }
+
+      <span class="hljs-keyword">this</span>.isKeyLeft =  x &lt; zone.left + zone.width / <span class="hljs-number">2</span> ;
+      <span class="hljs-keyword">this</span>.isKeyUp = y &lt; zone.top + zone.height / <span class="hljs-number">2</span> ;
+
+      <span class="hljs-keyword">this</span>._renderCropZone(
+        <span class="hljs-built_in">Math</span>.min(zone.left, x),
+        <span class="hljs-built_in">Math</span>.min(zone.top, y),
+        <span class="hljs-built_in">Math</span>.max(zone.left+zone.width, x),
+        <span class="hljs-built_in">Math</span>.max(zone.top+zone.height, y)
+      );
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Finish crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    onMouseUp: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === <span class="hljs-keyword">this</span>.startX || <span class="hljs-literal">null</span> === <span class="hljs-keyword">this</span>.startY) {
+        <span class="hljs-keyword">return</span>;
+      }
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      <span class="hljs-keyword">this</span>.cropZone.setCoords();
+      canvas.setActiveObject(<span class="hljs-keyword">this</span>.cropZone);
+      canvas.calcOffset();
+
+      <span class="hljs-keyword">this</span>.startX = <span class="hljs-literal">null</span>;
+      <span class="hljs-keyword">this</span>.startY = <span class="hljs-literal">null</span>;
+    },
+
+    onKeyDown: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">false</span> === <span class="hljs-keyword">this</span>.options.quickCropKey || event.keyCode !== <span class="hljs-keyword">this</span>.options.quickCropKey || <span class="hljs-keyword">this</span>.isKeyCroping)
+        <span class="hljs-keyword">return</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Active quick crop flow</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.isKeyCroping = <span class="hljs-literal">true</span> ;
+      <span class="hljs-keyword">this</span>.darkroom.canvas.discardActiveObject();
+      <span class="hljs-keyword">this</span>.cropZone.setWidth(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setHeight(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setScaleX(<span class="hljs-number">1</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setScaleY(<span class="hljs-number">1</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setTop(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">this</span>.cropZone.setLeft(<span class="hljs-number">0</span>);
+    },
+
+    onKeyUp: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">false</span> === <span class="hljs-keyword">this</span>.options.quickCropKey || event.keyCode !== <span class="hljs-keyword">this</span>.options.quickCropKey || !<span class="hljs-keyword">this</span>.isKeyCroping)
+        <span class="hljs-keyword">return</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Unactive quick crop flow</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.isKeyCroping = <span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">this</span>.startX = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">this</span>.startY = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">this</span>.onMouseUp();
+    },
+
+    selectZone: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(x, y, width, height, forceDimension)</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus())
+        <span class="hljs-keyword">this</span>.requireFocus();
+
+      <span class="hljs-keyword">if</span> (!forceDimension) {
+        <span class="hljs-keyword">this</span>._renderCropZone(x, y, x+width, y+height);
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">this</span>.cropZone.set({
+          <span class="hljs-string">'left'</span>: x,
+          <span class="hljs-string">'top'</span>: y,
+          <span class="hljs-string">'width'</span>: width,
+          <span class="hljs-string">'height'</span>: height
+        });
+      }
+
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+      canvas.bringToFront(<span class="hljs-keyword">this</span>.cropZone);
+      <span class="hljs-keyword">this</span>.cropZone.setCoords();
+      canvas.setActiveObject(<span class="hljs-keyword">this</span>.cropZone);
+      canvas.calcOffset();
+
+      <span class="hljs-keyword">this</span>.darkroom.dispatchEvent(<span class="hljs-string">'crop:update'</span>);
+    },
+
+    toggleCrop: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus())
+        <span class="hljs-keyword">this</span>.requireFocus();
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">this</span>.releaseFocus();
+    },
+
+    cropCurrentZone: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.hasFocus()) {
+        <span class="hljs-keyword">return</span>;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Avoid croping empty zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.cropZone.width &lt; <span class="hljs-number">1</span> &amp;&amp; <span class="hljs-keyword">this</span>.cropZone.height &lt; <span class="hljs-number">1</span>)
+        <span class="hljs-keyword">return</span>;
+
+      <span class="hljs-keyword">var</span> _this = <span class="hljs-keyword">this</span>;
+      <span class="hljs-keyword">var</span> darkroom = <span class="hljs-keyword">this</span>.darkroom;
+      <span class="hljs-keyword">var</span> canvas = darkroom.canvas;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Hide crop rectangle to avoid snapshot it with the image</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.cropZone.visible = <span class="hljs-literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Snapshot the image delimited by the crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> image = <span class="hljs-keyword">new</span> Image();
+      image.onload = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>Validate image</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.height &lt; <span class="hljs-number">1</span> || <span class="hljs-keyword">this</span>.width &lt; <span class="hljs-number">1</span>) {
+          <span class="hljs-keyword">return</span>;
+        }
+
+        <span class="hljs-keyword">var</span> imgInstance = <span class="hljs-keyword">new</span> fabric.Image(<span class="hljs-keyword">this</span>, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>options to make the image static</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          selectable: <span class="hljs-literal">false</span>,
+          evented: <span class="hljs-literal">false</span>,
+          lockMovementX: <span class="hljs-literal">true</span>,
+          lockMovementY: <span class="hljs-literal">true</span>,
+          lockRotation: <span class="hljs-literal">true</span>,
+          lockScalingX: <span class="hljs-literal">true</span>,
+          lockScalingY: <span class="hljs-literal">true</span>,
+          lockUniScaling: <span class="hljs-literal">true</span>,
+          hasControls: <span class="hljs-literal">false</span>,
+          hasBorders: <span class="hljs-literal">false</span>
+        });
+
+        <span class="hljs-keyword">var</span> width = <span class="hljs-keyword">this</span>.width;
+        <span class="hljs-keyword">var</span> height = <span class="hljs-keyword">this</span>.height;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Update canvas size</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        canvas.setWidth(width);
+        canvas.setHeight(height);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Add image</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        _this.darkroom.image.remove();
+        _this.darkroom.image = imgInstance;
+        canvas.add(imgInstance);
+
+        darkroom.dispatchEvent(<span class="hljs-string">'image:change'</span>);
+      };
+
+      image.src = canvas.toDataURL({
+        left: <span class="hljs-keyword">this</span>.cropZone.getLeft(),
+        top: <span class="hljs-keyword">this</span>.cropZone.getTop(),
+        width: <span class="hljs-keyword">this</span>.cropZone.getWidth(),
+        height: <span class="hljs-keyword">this</span>.cropZone.getHeight()
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Test wether crop zone is set</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    hasFocus: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.cropZone !== <span class="hljs-literal">undefined</span>;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Create the crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    requireFocus: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">this</span>.cropZone = <span class="hljs-keyword">new</span> CropZone({
+        fill: <span class="hljs-string">'transparent'</span>,
+        hasBorders: <span class="hljs-literal">false</span>,
+        originX: <span class="hljs-string">'left'</span>,
+        originY: <span class="hljs-string">'top'</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>stroke: ‘#444’,
+strokeDashArray: [5, 5],
+borderColor: ‘#444’,</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        cornerColor: <span class="hljs-string">'#444'</span>,
+        cornerSize: <span class="hljs-number">8</span>,
+        transparentCorners: <span class="hljs-literal">false</span>,
+        lockRotation: <span class="hljs-literal">true</span>,
+        hasRotatingPoint: <span class="hljs-literal">false</span>,
+      });
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.ratio) {
+        <span class="hljs-keyword">this</span>.cropZone.set(<span class="hljs-string">'lockUniScaling'</span>, <span class="hljs-literal">true</span>);
+      }
+
+      <span class="hljs-keyword">this</span>.darkroom.canvas.add(<span class="hljs-keyword">this</span>.cropZone);
+      <span class="hljs-keyword">this</span>.darkroom.canvas.defaultCursor = <span class="hljs-string">'crosshair'</span>;
+
+      <span class="hljs-keyword">this</span>.cropButton.active(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">this</span>.okButton.hide(<span class="hljs-literal">false</span>);
+      <span class="hljs-keyword">this</span>.cancelButton.hide(<span class="hljs-literal">false</span>);
+
+      Darkroom.util.forEachValue(<span class="hljs-keyword">this</span>.inputs, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input)</span> </span>{ input.value = <span class="hljs-string">''</span>; });
+      Darkroom.util.forEachValue(<span class="hljs-keyword">this</span>.inputs, Darkroom.util.showElement);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>Remove the crop zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    releaseFocus: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">undefined</span> === <span class="hljs-keyword">this</span>.cropZone)
+        <span class="hljs-keyword">return</span>;
+
+      <span class="hljs-keyword">this</span>.cropZone.remove();
+      <span class="hljs-keyword">this</span>.cropZone = <span class="hljs-literal">undefined</span>;
+
+      <span class="hljs-keyword">this</span>.cropButton.active(<span class="hljs-literal">false</span>);
+      <span class="hljs-keyword">this</span>.okButton.hide(<span class="hljs-literal">true</span>);
+      <span class="hljs-keyword">this</span>.cancelButton.hide(<span class="hljs-literal">true</span>);
+
+      Darkroom.util.forEachValue(<span class="hljs-keyword">this</span>.inputs, Darkroom.util.hideElement);
+
+      <span class="hljs-keyword">this</span>.darkroom.canvas.defaultCursor = <span class="hljs-string">'default'</span>;
+
+      <span class="hljs-keyword">this</span>.darkroom.dispatchEvent(<span class="hljs-string">'crop:update'</span>);
+    },
+
+    _renderCropZone: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(fromX, fromY, toX, toY)</span> </span>{
+      <span class="hljs-keyword">var</span> canvas = <span class="hljs-keyword">this</span>.darkroom.canvas;
+
+      <span class="hljs-keyword">var</span> isRight = (toX &gt; fromX);
+      <span class="hljs-keyword">var</span> isLeft = !isRight;
+      <span class="hljs-keyword">var</span> isDown = (toY &gt; fromY);
+      <span class="hljs-keyword">var</span> isUp = !isDown;
+
+      <span class="hljs-keyword">var</span> minWidth = <span class="hljs-built_in">Math</span>.min(+<span class="hljs-keyword">this</span>.options.minWidth, canvas.getWidth());
+      <span class="hljs-keyword">var</span> minHeight = <span class="hljs-built_in">Math</span>.min(+<span class="hljs-keyword">this</span>.options.minHeight, canvas.getHeight());</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>Define corner coordinates</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> leftX = <span class="hljs-built_in">Math</span>.min(fromX, toX);
+      <span class="hljs-keyword">var</span> rightX = <span class="hljs-built_in">Math</span>.max(fromX, toX);
+      <span class="hljs-keyword">var</span> topY = <span class="hljs-built_in">Math</span>.min(fromY, toY);
+      <span class="hljs-keyword">var</span> bottomY = <span class="hljs-built_in">Math</span>.max(fromY, toY);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Replace current point into the canvas</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      leftX = <span class="hljs-built_in">Math</span>.max(<span class="hljs-number">0</span>, leftX);
+      rightX = <span class="hljs-built_in">Math</span>.min(canvas.getWidth(), rightX);
+      topY = <span class="hljs-built_in">Math</span>.max(<span class="hljs-number">0</span>, topY)
+      bottomY = <span class="hljs-built_in">Math</span>.min(canvas.getHeight(), bottomY);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>Recalibrate coordinates according to given options</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (rightX - leftX &lt; minWidth) {
+        <span class="hljs-keyword">if</span> (isRight)
+          rightX = leftX + minWidth;
+        <span class="hljs-keyword">else</span>
+          leftX = rightX - minWidth;
+      }
+      <span class="hljs-keyword">if</span> (bottomY - topY &lt; minHeight) {
+        <span class="hljs-keyword">if</span> (isDown)
+          bottomY = topY + minHeight;
+        <span class="hljs-keyword">else</span>
+          topY = bottomY - minHeight;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>Truncate truncate according to canvas dimensions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (leftX &lt; <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>Translate to the left</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        rightX += <span class="hljs-built_in">Math</span>.abs(leftX);
+        leftX = <span class="hljs-number">0</span>
+      }
+      <span class="hljs-keyword">if</span> (rightX &gt; canvas.getWidth()) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>Translate to the right</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        leftX -= (rightX - canvas.getWidth());
+        rightX = canvas.getWidth();
+      }
+      <span class="hljs-keyword">if</span> (topY &lt; <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>Translate to the bottom</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        bottomY += <span class="hljs-built_in">Math</span>.abs(topY);
+        topY = <span class="hljs-number">0</span>
+      }
+      <span class="hljs-keyword">if</span> (bottomY &gt; canvas.getHeight()) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>Translate to the right</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        topY -= (bottomY - canvas.getHeight());
+        bottomY = canvas.getHeight();
+      }
+
+      <span class="hljs-keyword">var</span> width = rightX - leftX;
+      <span class="hljs-keyword">var</span> height = bottomY - topY;
+      <span class="hljs-keyword">var</span> currentRatio = width / height;
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.options.ratio &amp;&amp; +<span class="hljs-keyword">this</span>.options.ratio !== currentRatio) {
+        <span class="hljs-keyword">var</span> ratio = +<span class="hljs-keyword">this</span>.options.ratio;
+
+        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.isKeyCroping) {
+          isLeft = <span class="hljs-keyword">this</span>.isKeyLeft;
+          isUp = <span class="hljs-keyword">this</span>.isKeyUp;
+        }
+
+        <span class="hljs-keyword">if</span> (currentRatio &lt; ratio) {
+          <span class="hljs-keyword">var</span> newWidth = height * ratio;
+          <span class="hljs-keyword">if</span> (isLeft) {
+            leftX -= (newWidth - width);
+          }
+          width = newWidth;
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (currentRatio &gt; ratio) {
+          <span class="hljs-keyword">var</span> newHeight = height / (ratio * height/width);
+          <span class="hljs-keyword">if</span> (isUp) {
+            topY -= (newHeight - height);
+          }
+          height = newHeight;
+        }
+
+        <span class="hljs-keyword">if</span> (leftX &lt; <span class="hljs-number">0</span>) {
+          leftX = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>TODO</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        }
+        <span class="hljs-keyword">if</span> (topY &lt; <span class="hljs-number">0</span>) {
+          topY = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>TODO</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        }
+        <span class="hljs-keyword">if</span> (leftX + width &gt; canvas.getWidth()) {
+          <span class="hljs-keyword">var</span> newWidth = canvas.getWidth() - leftX;
+          height = newWidth * height / width;
+          width = newWidth;
+          <span class="hljs-keyword">if</span> (isUp) {
+            topY = fromY - height;
+          }
+        }
+        <span class="hljs-keyword">if</span> (topY + height &gt; canvas.getHeight()) {
+          <span class="hljs-keyword">var</span> newHeight = canvas.getHeight() - topY;
+          width = width * newHeight / height;
+          height = newHeight;
+          <span class="hljs-keyword">if</span> (isLeft) {
+            leftX = fromX - width;
+          }
+        }
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>Apply coordinates</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.cropZone.left = leftX;
+      <span class="hljs-keyword">this</span>.cropZone.top = topY;
+      <span class="hljs-keyword">this</span>.cropZone.width = width;
+      <span class="hljs-keyword">this</span>.cropZone.height = height;
+
+      <span class="hljs-keyword">this</span>.darkroom.canvas.bringToFront(<span class="hljs-keyword">this</span>.cropZone);
+
+      <span class="hljs-keyword">this</span>.darkroom.dispatchEvent(<span class="hljs-string">'crop:update'</span>);
+    }
+  });
+})(<span class="hljs-built_in">window</span>, <span class="hljs-built_in">document</span>, Darkroom, fabric);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

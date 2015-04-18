@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>darkroom.thumbnail.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="darkroom.html">
+                darkroom.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.brightness.html">
+                darkroom.brightness.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.crop.html">
+                darkroom.crop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.dragndrop.html">
+                darkroom.dragndrop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.history.html">
+                darkroom.history.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.rotate.html">
+                darkroom.rotate.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.save.html">
+                darkroom.save.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.thumbnail.html">
+                darkroom.thumbnail.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.watermark.html">
+                darkroom.watermark.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.zoom.html">
+                darkroom.zoom.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>darkroom.thumbnail.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>;(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(Darkroom, fabric, document)</span> </span>{
+<span class="hljs-pi">  'use strict'</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getImplementation</span><span class="hljs-params">(_this)</span> </span>{
+
+    <span class="hljs-keyword">var</span> state = {
+      pristine: <span class="hljs-literal">true</span>
+    };
+
+    <span class="hljs-keyword">var</span> helpers = {
+
+      scaleBy: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scale)</span> </span>{
+
+        <span class="hljs-keyword">var</span> darkroom = _this.darkroom,
+            inputs   = _this.inputs,
+            image    = _this.darkroom.image;
+
+        <span class="hljs-keyword">var</span> height = <span class="hljs-built_in">Math</span>.floor(image.getHeight() * (<span class="hljs-number">1</span> + scale)),
+            width  = <span class="hljs-built_in">Math</span>.floor(image.getWidth()  * (<span class="hljs-number">1</span> + scale));
+
+        <span class="hljs-keyword">if</span> (height !== image.getHeight() || width !== image.getWidth()) {
+
+          darkroom.replaceImage(image.set({width: width, height: height}));
+
+          inputs.height.value = image.getHeight();
+          inputs.width.value  = image.getWidth();
+          state.pristine      = <span class="hljs-literal">false</span>;
+        }
+      }
+    };
+
+    <span class="hljs-keyword">var</span> states = {
+
+      active: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> buttons = _this.buttons,
+            inputs  = _this.inputs,
+            image   = _this.darkroom.image;
+
+        Darkroom.util.cloneImage(image, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(clonedImage)</span> </span>{ _this.originalImage = clonedImage; });
+
+        buttons.thumbnail.active(<span class="hljs-literal">true</span>);
+        buttons.increase.hide(<span class="hljs-literal">false</span>);
+        buttons.decrease.hide(<span class="hljs-literal">false</span>);
+        buttons.accept.hide(<span class="hljs-literal">false</span>);
+        buttons.cancel.hide(<span class="hljs-literal">false</span>);
+
+        buttons.thumbnail.element.removeEventListener(<span class="hljs-string">'click'</span>, eventListeners.activate);
+        buttons.thumbnail.addEventListener(<span class="hljs-string">'click'</span>, eventListeners.deActivate);
+
+        Darkroom.util.forEachValue(inputs, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input)</span> </span>{ input.value = <span class="hljs-string">''</span>; });
+        Darkroom.util.forEachValue(inputs, Darkroom.util.showElement);
+      },
+
+      notActive: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> buttons = _this.buttons,
+            inputs  = _this.inputs;
+
+        _this.originalImage         = <span class="hljs-literal">null</span>;
+
+        buttons.thumbnail.active(<span class="hljs-literal">false</span>);
+        buttons.increase.hide(<span class="hljs-literal">true</span>);
+        buttons.decrease.hide(<span class="hljs-literal">true</span>);
+        buttons.accept.hide(<span class="hljs-literal">true</span>);
+        buttons.cancel.hide(<span class="hljs-literal">true</span>);
+
+        buttons.thumbnail.element.removeEventListener(<span class="hljs-string">'click'</span>, eventListeners.deActivate);
+        buttons.thumbnail.addEventListener(<span class="hljs-string">'click'</span>, eventListeners.activate);
+
+        Darkroom.util.forEachValue(inputs, Darkroom.util.hideElement);
+      }
+    };
+
+    <span class="hljs-keyword">var</span> eventListeners = {
+
+      activate: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ states.active(); },
+
+      deActivate: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> originalImage = _this.originalImage,
+            darkroom      = _this.darkroom;
+
+        darkroom.replaceImage(originalImage);
+        states.notActive();
+      },
+
+      accept: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> darkroom = _this.darkroom,
+            buttons  = _this.buttons,
+            options  = _this.options,
+            inputs   = _this.inputs,
+            image    = _this.darkroom.image;
+
+        <span class="hljs-keyword">var</span> keepAspectRatio = inputs.keepAspectRatio.checked,
+            height          = <span class="hljs-built_in">parseInt</span>(inputs.height.value),
+            width           = <span class="hljs-built_in">parseInt</span>(inputs.width.value),
+            scale           = <span class="hljs-built_in">parseFloat</span>(inputs.scale.value);
+
+        <span class="hljs-keyword">if</span> (scale || (height || width)) {
+
+          height = height || image.getHeight();
+          width  = width  || image.getWidth();
+
+          <span class="hljs-keyword">if</span> (scale) {
+            height = <span class="hljs-built_in">Math</span>.floor(image.getHeight() * scale);
+            width  = <span class="hljs-built_in">Math</span>.floor(image.getWidth()  * scale);
+          }
+          <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (keepAspectRatio) {
+
+          }
+
+          <span class="hljs-keyword">if</span> (image.getHeight() !== height || image.getWidth() !== width) {
+
+            state.pristine = <span class="hljs-literal">false</span>;
+            image.set({
+              height: (height || image.getHeight()),
+              width:  (width  || image.getWidth())
+            });
+
+            darkroom.replaceImage(image);
+          }
+        }
+
+        <span class="hljs-keyword">if</span> (!state.pristine) { darkroom.dispatchEvent(<span class="hljs-string">'image:change'</span>); }
+
+        states.notActive();
+      },
+
+      increase: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ helpers.scaleBy(+_this.options.scaleBy); },
+      decrease: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ helpers.scaleBy(-_this.options.scaleBy); }
+    };
+
+    <span class="hljs-keyword">return</span> {
+      eventListeners: eventListeners,
+      states:         states
+    };
+  }
+
+  Darkroom.plugins[<span class="hljs-string">'thumbnail'</span>] = Darkroom.Plugin.extend({
+
+    defaults: {
+      scaleBy: <span class="hljs-number">0.05</span>
+    },
+
+    initialize: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+      <span class="hljs-keyword">var</span> darkroomOptions = <span class="hljs-keyword">this</span>.darkroom.options,
+          buttonGroup     = <span class="hljs-keyword">this</span>.darkroom.toolbar.createButtonGroup(),
+          options         = <span class="hljs-keyword">this</span>.options;
+
+      options.minHeight = darkroomOptions.minHeight;
+      options.maxHeight = darkroomOptions.maxHeight;
+      options.minWidth  = darkroomOptions.minWidth;
+      options.maxWidth  = darkroomOptions.maxWidth;
+
+      <span class="hljs-keyword">var</span> buttons = <span class="hljs-keyword">this</span>.buttons = {},
+          inputs  = <span class="hljs-keyword">this</span>.inputs  = {};
+
+      buttons.thumbnail = buttonGroup.createButton({image: <span class="hljs-string">'resize'</span>});
+      buttons.increase  = buttonGroup.createButton({image: <span class="hljs-string">'add'</span>, hide: <span class="hljs-literal">true</span>});
+      buttons.decrease  = buttonGroup.createButton({image: <span class="hljs-string">'subtract'</span>, hide: <span class="hljs-literal">true</span>});
+      buttons.accept    = buttonGroup.createButton({image: <span class="hljs-string">'accept'</span>,type: <span class="hljs-string">'success'</span>,hide: <span class="hljs-literal">true</span>});
+      buttons.cancel    = buttonGroup.createButton({image: <span class="hljs-string">'cancel'</span>, type: <span class="hljs-string">'danger'</span>,hide: <span class="hljs-literal">true</span>});
+
+      inputs.scale = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        placeholder: <span class="hljs-string">'Scale'</span>,
+        style:       <span class="hljs-string">'width: 4em;'</span>,
+        title:       <span class="hljs-string">'Scale'</span>,
+        type:        <span class="hljs-string">'number'</span>,
+        step:        <span class="hljs-number">0.5</span>,
+        min:         <span class="hljs-number">0</span>
+      });
+
+      inputs.width = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        placeholder: <span class="hljs-string">'Width'</span>,
+        style:       <span class="hljs-string">'width: 4em;'</span>,
+        title:       <span class="hljs-string">'Width'</span>,
+        type:        <span class="hljs-string">'number'</span>,
+        step:        <span class="hljs-number">10</span>,
+        min:         options.minWidth,
+        max:         options.maxWidth
+      });
+
+      inputs.height = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        placeholder: <span class="hljs-string">'Height'</span>,
+        style:       <span class="hljs-string">'width: 4em;'</span>,
+        title:       <span class="hljs-string">'Height'</span>,
+        type:        <span class="hljs-string">'number'</span>,
+        step:        <span class="hljs-number">10</span>,
+        min:         options.minHeight,
+        max:         options.maxHeight
+      });
+
+      inputs.keepAspectRatio = Darkroom.util.createElement(<span class="hljs-string">'input'</span>, {
+        autocomplete: <span class="hljs-string">'off'</span>,
+        style:        <span class="hljs-string">'width: 4em;'</span>,
+        placeholder:  <span class="hljs-string">'Keep Aspect Ratio'</span>,
+        title:        <span class="hljs-string">'Keep Aspect Ratio'</span>,
+        type:         <span class="hljs-string">'checkbox'</span>
+      });
+
+      <span class="hljs-keyword">var</span> implementation = getImplementation(<span class="hljs-keyword">this</span>);
+
+      buttons.increase.addEventListener(<span class="hljs-string">'click'</span>, implementation.eventListeners.increase);
+      buttons.decrease.addEventListener(<span class="hljs-string">'click'</span>, implementation.eventListeners.decrease);
+      buttons.cancel.addEventListener(<span class="hljs-string">'click'</span>, implementation.eventListeners.deActivate);
+      buttons.accept.addEventListener(<span class="hljs-string">'click'</span>, implementation.eventListeners.accept);
+
+      buttonGroup.element.appendChild(inputs.scale);
+      buttonGroup.element.appendChild(inputs.width);
+      buttonGroup.element.appendChild(inputs.height);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>buttonGroup.element.appendChild(inputs.keepAspectRatio);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+      implementation.states.notActive();
+    }
+  });
+})(Darkroom, fabric, <span class="hljs-built_in">document</span>);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>darkroom.save.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="darkroom.html">
+                darkroom.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.brightness.html">
+                darkroom.brightness.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.crop.html">
+                darkroom.crop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.dragndrop.html">
+                darkroom.dragndrop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.history.html">
+                darkroom.history.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.rotate.html">
+                darkroom.rotate.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.save.html">
+                darkroom.save.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.thumbnail.html">
+                darkroom.thumbnail.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.watermark.html">
+                darkroom.watermark.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.zoom.html">
+                darkroom.zoom.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>darkroom.save.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>;(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(window, document, Darkroom)</span> </span>{
+<span class="hljs-pi">  'use strict'</span>;
+
+  Darkroom.plugins[<span class="hljs-string">'save'</span>] = Darkroom.Plugin.extend({
+    defaults: {
+      callback: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">this</span>.darkroom.selfDestroy();
+      }
+    },
+
+    initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">InitDarkroomSavePlugin</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> buttonGroup = <span class="hljs-keyword">this</span>.darkroom.toolbar.createButtonGroup();
+
+      <span class="hljs-keyword">this</span>.destroyButton = buttonGroup.createButton({
+        image: <span class="hljs-string">'save'</span>
+      });
+
+      <span class="hljs-keyword">this</span>.destroyButton.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">this</span>.options.callback.bind(<span class="hljs-keyword">this</span>));
+    },
+  });
+})(<span class="hljs-built_in">window</span>, <span class="hljs-built_in">document</span>, Darkroom);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

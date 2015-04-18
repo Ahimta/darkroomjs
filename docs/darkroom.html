@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>darkroom.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="darkroom.html">
+                darkroom.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.brightness.html">
+                darkroom.brightness.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.crop.html">
+                darkroom.crop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.dragndrop.html">
+                darkroom.dragndrop.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.history.html">
+                darkroom.history.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.rotate.html">
+                darkroom.rotate.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.save.html">
+                darkroom.save.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.thumbnail.html">
+                darkroom.thumbnail.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.watermark.html">
+                darkroom.watermark.js
+              </a>
+            
+              
+              <a class="source" href="darkroom.zoom.html">
+                darkroom.zoom.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>darkroom.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <pre><code>DarkroomJS
+</code></pre>
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <pre><code>(c) <span class="hljs-number">2013</span> Matthieu Moquet.
+DarkroomJS may be freely distributed under the MIT license.
+For all details and documentation:
+http:<span class="hljs-comment">//mattketmo.github.io/darkroomjs</span>
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+;(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(window, document, fabric)</span> </span>{
+<span class="hljs-pi">  'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2 id="utilities">Utilities</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Utility method to easily extend objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">extend</span><span class="hljs-params">(b, a)</span> </span>{
+    <span class="hljs-keyword">var</span> prop;
+    <span class="hljs-keyword">if</span> (b === <span class="hljs-literal">undefined</span>) {
+      <span class="hljs-keyword">return</span> a;
+    }
+    <span class="hljs-keyword">for</span> (prop <span class="hljs-keyword">in</span> a) {
+      <span class="hljs-keyword">if</span> (a.hasOwnProperty(prop) &amp;&amp; b.hasOwnProperty(prop) === <span class="hljs-literal">false</span>) {
+        b[prop] = a[prop];
+      }
+    }
+    <span class="hljs-keyword">return</span> b;
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="root-definitions">Root definitions</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Core object of DarkroomJS.
+Basically it’s a single object, instanciable via an element
+(it could be a CSS selector or a DOM element), some custom options,
+and a list of plugin objects (or none to use default ones).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Darkroom</span><span class="hljs-params">(element, options, plugins)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.init(element, options, plugins);
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Darkroom namespace is the only one available outside of this context.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-built_in">window</span>.Darkroom = Darkroom;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Create an empty list of plugin objects, which will be filled by
+other plugin scripts. This is the default plugin list if none is
+specified in Darkroom’ss constructor.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  Darkroom.plugins = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Define a plugin object. This is the (abstract) parent class which
+has to be extended for each plugin.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Plugin</span><span class="hljs-params">(darkroom, options)</span> </span>{
+    <span class="hljs-keyword">this</span>.darkroom = darkroom;
+    <span class="hljs-keyword">this</span>.options = extend(options, <span class="hljs-keyword">this</span>.defaults);
+    <span class="hljs-keyword">this</span>.initialize();
+  }
+
+  Plugin.prototype = {
+    defaults: {},
+    initialize: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ }
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Inspired by Backbone.js extend capability.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  Plugin.extend = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(protoProps)</span> </span>{
+    <span class="hljs-keyword">var</span> parent = <span class="hljs-keyword">this</span>;
+    <span class="hljs-keyword">var</span> child;
+
+    <span class="hljs-keyword">if</span> (protoProps &amp;&amp; protoProps.hasOwnProperty(<span class="hljs-string">'constructor'</span>)) {
+      child = protoProps.constructor;
+    } <span class="hljs-keyword">else</span> {
+      child = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{ <span class="hljs-keyword">return</span> parent.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>); };
+    }
+
+    extend(child, parent);
+
+    <span class="hljs-keyword">var</span> Surrogate = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{ <span class="hljs-keyword">this</span>.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = <span class="hljs-keyword">new</span> Surrogate;
+
+    <span class="hljs-keyword">if</span> (protoProps) extend(child.prototype, protoProps);
+
+    child.__super__ = parent.prototype;
+
+    <span class="hljs-keyword">return</span> child;
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Attach the plugin class into the main namespace.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  Darkroom.Plugin = Plugin;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2 id="ui-elements">UI elements</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Toolbar object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Toolbar</span><span class="hljs-params">(element)</span> </span>{
+    <span class="hljs-keyword">this</span>.element = element;
+    <span class="hljs-keyword">this</span>.actionsElement = element.querySelector(<span class="hljs-string">'.darkroom-toolbar-actions'</span>);
+  }
+
+  Toolbar.prototype.createButtonGroup = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{
+    <span class="hljs-keyword">var</span> buttonGroup = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'li'</span>);
+    buttonGroup.className = <span class="hljs-string">'darkroom-button-group'</span>;
+    <span class="hljs-comment">/*buttonGroup.innerHTML = '&lt;ul&gt;&lt;/ul&gt;';*/</span>
+    <span class="hljs-keyword">this</span>.actionsElement.appendChild(buttonGroup);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ButtonGroup(buttonGroup);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>ButtonGroup object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ButtonGroup</span><span class="hljs-params">(element)</span> </span>{
+    <span class="hljs-keyword">this</span>.element = element;
+  }
+
+  ButtonGroup.prototype.createButton = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{
+    <span class="hljs-keyword">var</span> defaults = {
+      image: <span class="hljs-string">'help'</span>,
+      type: <span class="hljs-string">'default'</span>,
+      group: <span class="hljs-string">'default'</span>,
+      hide: <span class="hljs-literal">false</span>,
+      disabled: <span class="hljs-literal">false</span>
+    };
+
+    options = extend(options, defaults);
+
+    <span class="hljs-keyword">var</span> button = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'button'</span>);
+    button.className = <span class="hljs-string">'darkroom-button darkroom-button-'</span> + options.type;
+    button.innerHTML = <span class="hljs-string">'&lt;i class="darkroom-icon-'</span> + options.image + <span class="hljs-string">'"&gt;&lt;/i&gt;'</span>;
+    <span class="hljs-keyword">this</span>.element.appendChild(button);
+
+    <span class="hljs-keyword">var</span> button = <span class="hljs-keyword">new</span> Button(button);
+    button.hide(options.hide);
+    button.disable(options.disabled);
+
+    <span class="hljs-keyword">return</span> button;
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Button object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Button</span><span class="hljs-params">(element)</span> </span>{
+    <span class="hljs-keyword">this</span>.element = element;
+  }
+  Button.prototype = {
+    addEventListener: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(eventName, callback)</span> </span>{
+      <span class="hljs-keyword">var</span> el = <span class="hljs-keyword">this</span>.element;
+      <span class="hljs-keyword">if</span> (el.addEventListener){
+        el.addEventListener(eventName, callback);
+      } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (el.attachEvent) {
+        el.attachEvent(<span class="hljs-string">'on'</span> + eventName, callback);
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    },
+    removeEventListener: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(eventName, callback)</span> </span>{
+      <span class="hljs-keyword">this</span>.element.removeEventListener(eventName, callback);
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    },
+    active: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value)</span> </span>{
+      <span class="hljs-keyword">if</span> (value)
+        <span class="hljs-keyword">this</span>.element.classList.add(<span class="hljs-string">'darkroom-button-active'</span>);
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">this</span>.element.classList.remove(<span class="hljs-string">'darkroom-button-active'</span>);
+    },
+    hide: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value)</span> </span>{
+      <span class="hljs-keyword">if</span> (value)
+        <span class="hljs-keyword">this</span>.element.classList.add(<span class="hljs-string">'darkroom-button-hidden'</span>);
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">this</span>.element.classList.remove(<span class="hljs-string">'darkroom-button-hidden'</span>);
+    },
+    disable: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value)</span> </span>{
+      <span class="hljs-keyword">this</span>.element.disabled = (value) ? <span class="hljs-literal">true</span> : <span class="hljs-literal">false</span>;
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Extend the default fabric canvas object to add default options.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> Canvas = fabric.util.createClass(fabric.Canvas, {
+  });
+
+  Darkroom.util = {
+
+    createElement: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(type, attrs)</span> </span>{
+
+      <span class="hljs-keyword">var</span> elt = <span class="hljs-built_in">document</span>.createElement(type);
+
+      <span class="hljs-built_in">Object</span>.keys(attrs).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(prop)</span> </span>{ elt.setAttribute(prop, attrs[prop]); })
+      <span class="hljs-keyword">return</span> elt;
+    },
+
+    hideElement: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(elt)</span> </span>{
+      elt.style.display = <span class="hljs-string">'none'</span>;
+      <span class="hljs-keyword">return</span> elt;
+    },
+
+    showElement: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(elt)</span> </span>{
+      elt.style.display = <span class="hljs-string">'inline'</span>;
+      <span class="hljs-keyword">return</span> elt;
+    },
+
+    forEachValue: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj, cb)</span> </span>{
+
+      <span class="hljs-built_in">Object</span>.keys(obj).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(prop)</span> </span>{ cb(obj[prop]); });
+    },
+
+    cloneImage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(image, cb)</span> </span>{
+
+      <span class="hljs-keyword">var</span> OPTS = [
+        <span class="hljs-string">'lockMovementX'</span>, <span class="hljs-string">'lockMovementY'</span>, <span class="hljs-string">'lockRotation'</span>, <span class="hljs-string">'lockScalingX'</span>, <span class="hljs-string">'lockScalingY'</span>,
+        <span class="hljs-string">'lockUniScaling'</span>, <span class="hljs-string">'hasControls'</span>, <span class="hljs-string">'hasBorders'</span>, <span class="hljs-string">'selectable'</span>, <span class="hljs-string">'evented'</span>
+      ];
+
+      image.clone(cb, OPTS);
+    },
+
+    makeStatic: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(fabricObject)</span> </span>{
+
+      fabricObject.set({
+        selectable: <span class="hljs-literal">false</span>,
+        evented: <span class="hljs-literal">false</span>,
+        lockMovementX: <span class="hljs-literal">true</span>,
+        lockMovementY: <span class="hljs-literal">true</span>,
+        lockRotation: <span class="hljs-literal">true</span>,
+        lockScalingX: <span class="hljs-literal">true</span>,
+        lockScalingY: <span class="hljs-literal">true</span>,
+        lockUniScaling: <span class="hljs-literal">true</span>,
+        hasControls: <span class="hljs-literal">false</span>,
+        hasBorders: <span class="hljs-literal">false</span>
+      });
+
+      <span class="hljs-keyword">return</span> fabricObject;
+    }
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h2 id="core-object-prototype">Core object prototype</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  Darkroom.prototype = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>This is the default options.
+It has it’s own options, such as dimension specification (min/max
+width and height), plus options for each plugins.
+Option for those plugins are passed through plugin name.
+<code>init</code> option is a callback called after image is loaded into the
+canvas.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    defaults: {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>main options</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      minWidth: <span class="hljs-literal">null</span>,
+      minHeight: <span class="hljs-literal">null</span>,
+      maxWidth: <span class="hljs-literal">null</span>,
+      maxHeight: <span class="hljs-literal">null</span>,
+      backgroundColor: <span class="hljs-string">'#ccc'</span>,
+
+      imageUrl: <span class="hljs-literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>plugins options</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      plugins: {},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>after initialisation callback</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      init: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{}
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Add ability to attach event listener on the core object.
+It uses the canvas element to process events.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    addEventListener: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(eventName, callback)</span> </span>{
+      <span class="hljs-keyword">var</span> el = <span class="hljs-keyword">this</span>.canvas.getElement();
+      <span class="hljs-keyword">if</span> (el.addEventListener){
+        el.addEventListener(eventName, callback);
+      } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (el.attachEvent) {
+        el.attachEvent(<span class="hljs-string">'on'</span> + eventName, callback);
+      }
+    },
+    dispatchEvent: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(eventName)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Use the old way of creating event to be IE compatible
+See <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events">https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> event = <span class="hljs-built_in">document</span>.createEvent(<span class="hljs-string">'Event'</span>);
+      event.initEvent(eventName, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+
+      <span class="hljs-keyword">this</span>.canvas.getElement().dispatchEvent(event);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Initialisation.
+It will replace the given image element by a canvas plus some wrapper
+<code>div</code> blocks. A toolbar object is instanciated and the image is loaded
+into the canvas element. Finally it calls each plugins initialisation
+methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    init: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(element, options, plugins)</span> </span>{
+      <span class="hljs-keyword">var</span> _this = <span class="hljs-keyword">this</span>;
+      <span class="hljs-keyword">this</span>.options = extend(options, <span class="hljs-keyword">this</span>.defaults);
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> element === <span class="hljs-string">'string'</span>)
+        element = <span class="hljs-built_in">document</span>.querySelector(element);
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === element)
+        <span class="hljs-keyword">return</span>;
+
+      <span class="hljs-keyword">var</span> plugins = plugins || Darkroom.plugins;
+
+      <span class="hljs-keyword">var</span> image = <span class="hljs-keyword">new</span> Image();
+
+      <span class="hljs-keyword">var</span> imageUrl = <span class="hljs-keyword">this</span>.options.imageUrl;
+
+      image.onload = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        _this
+          .createFabricImage(element)
+          .initDOM(element)
+          .initPlugins(plugins)
+        ;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Execute a custom callback after initialization</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        _this.options.init.bind(_this).call();
+      }
+
+      <span class="hljs-comment">/*image.crossOrigin = 'anonymous';*/</span>
+      <span class="hljs-keyword">if</span> (imageUrl) { image.src = imageUrl;    }
+      <span class="hljs-keyword">else</span>          { image.src = element.src; }
+    },
+
+    initDOM: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(element)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Create toolbar element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> toolbar = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'div'</span>);
+      toolbar.className = <span class="hljs-string">'darkroom-toolbar'</span>;
+      toolbar.innerHTML = <span class="hljs-string">'&lt;ul class="darkroom-toolbar-actions"&gt;&lt;/ul&gt;'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Create canvas element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> canvas = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'canvas'</span>);
+      <span class="hljs-keyword">var</span> canvasContainer = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'div'</span>);
+      canvasContainer.className = <span class="hljs-string">'darkroom-image-container'</span>;
+      canvasContainer.appendChild(canvas);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Create container element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.container = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'div'</span>);
+      <span class="hljs-keyword">this</span>.container.className = <span class="hljs-string">'darkroom-container'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Assemble elements</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.container.appendChild(toolbar);
+      <span class="hljs-keyword">this</span>.container.appendChild(canvasContainer);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Replace image with new DOM</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      element.parentNode.replaceChild(<span class="hljs-keyword">this</span>.container, element);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>Save elements</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.toolbar = <span class="hljs-keyword">new</span> Toolbar(toolbar);
+      <span class="hljs-keyword">this</span>.canvas = <span class="hljs-keyword">new</span> Canvas(canvas, {
+        selection: <span class="hljs-literal">false</span>,
+        backgroundColor: <span class="hljs-keyword">this</span>.options.backgroundColor
+      });
+
+      <span class="hljs-keyword">this</span>.canvas.setWidth(<span class="hljs-keyword">this</span>.image.getWidth());
+      <span class="hljs-keyword">this</span>.canvas.setHeight(<span class="hljs-keyword">this</span>.image.getHeight());
+      <span class="hljs-keyword">this</span>.canvas.add(<span class="hljs-keyword">this</span>.image);
+      <span class="hljs-keyword">this</span>.canvas.centerObject(<span class="hljs-keyword">this</span>.image);
+      <span class="hljs-keyword">this</span>.image.setCoords();
+
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    },
+
+    createFabricImage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(imgElement)</span> </span>{
+      <span class="hljs-keyword">var</span> width = imgElement.width;
+      <span class="hljs-keyword">var</span> height = imgElement.height;
+      <span class="hljs-keyword">var</span> scaleMin = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">var</span> scaleMax = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">var</span> scaleX = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">var</span> scaleY = <span class="hljs-number">1</span>;
+
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.maxWidth &amp;&amp; <span class="hljs-keyword">this</span>.options.maxWidth &lt; width) {
+        scaleX =  <span class="hljs-keyword">this</span>.options.maxWidth / width;
+      }
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.maxHeight &amp;&amp; <span class="hljs-keyword">this</span>.options.maxHeight &lt; height) {
+        scaleY =  <span class="hljs-keyword">this</span>.options.maxHeight / height;
+      }
+      scaleMin = <span class="hljs-built_in">Math</span>.min(scaleX, scaleY);
+
+      scaleX = <span class="hljs-number">1</span>;
+      scaleY = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.minWidth &amp;&amp; <span class="hljs-keyword">this</span>.options.minWidth &gt; width) {
+        scaleX =  <span class="hljs-keyword">this</span>.options.minWidth / width;
+      }
+      <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> !== <span class="hljs-keyword">this</span>.options.minHeight &amp;&amp; <span class="hljs-keyword">this</span>.options.minHeight &gt; height) {
+        scaleY =  <span class="hljs-keyword">this</span>.options.minHeight / height;
+      }
+      scaleMax = <span class="hljs-built_in">Math</span>.max(scaleX, scaleY);
+
+      <span class="hljs-keyword">var</span> scale = scaleMax * scaleMin; <span class="hljs-comment">// one should be equals to 1</span>
+
+      width *= scale;
+      height *= scale;
+
+      <span class="hljs-keyword">this</span>.image = <span class="hljs-keyword">new</span> fabric.Image(imgElement, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>options to make the image static</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        selectable: <span class="hljs-literal">false</span>,
+        evented: <span class="hljs-literal">false</span>,
+        lockMovementX: <span class="hljs-literal">true</span>,
+        lockMovementY: <span class="hljs-literal">true</span>,
+        lockRotation: <span class="hljs-literal">true</span>,
+        lockScalingX: <span class="hljs-literal">true</span>,
+        lockScalingY: <span class="hljs-literal">true</span>,
+        lockUniScaling: <span class="hljs-literal">true</span>,
+        hasControls: <span class="hljs-literal">false</span>,
+        hasBorders: <span class="hljs-literal">false</span>
+      });
+      <span class="hljs-keyword">this</span>.image.setScaleX(scale);
+      <span class="hljs-keyword">this</span>.image.setScaleY(scale);
+
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+    },
+
+    initPlugins: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(plugins)</span> </span>{
+
+      <span class="hljs-keyword">this</span>.plugins = {};
+
+      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> name <span class="hljs-keyword">in</span> plugins) {
+
+        <span class="hljs-keyword">var</span> plugin = plugins[name];
+        <span class="hljs-keyword">var</span> options = <span class="hljs-keyword">this</span>.options.plugins[name];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Setting false into the plugin options will disable the plugin</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (options !== <span class="hljs-literal">false</span> &amp;&amp; plugins.hasOwnProperty(name)) {
+
+          <span class="hljs-keyword">try</span>               { <span class="hljs-keyword">this</span>.plugins[name] = <span class="hljs-keyword">new</span> plugin(<span class="hljs-keyword">this</span>, options);                }
+          <span class="hljs-keyword">catch</span> (exception) { <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Darkroom plugin '</span> + name + <span class="hljs-string">' failed'</span>, exception); }
+        }
+      }
+    },
+
+    getPlugin: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name)</span> </span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.plugins[name];
+    },
+
+    selfDestroy: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> container = <span class="hljs-keyword">this</span>.container;
+
+      <span class="hljs-keyword">var</span> image = <span class="hljs-keyword">new</span> Image();
+      image.onload = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+        container.parentNode.replaceChild(image, container);
+      }
+
+      image.src = <span class="hljs-keyword">this</span>.snapshotImage();
+
+      <span class="hljs-comment">/* TODO
+       - destroy plugins
+       - delete canvas
+      */</span>
+    },
+
+    snapshotImage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.canvas.toDataURL();
+    },
+
+    replaceImage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(newFabricImage)</span> </span>{
+
+      <span class="hljs-keyword">var</span> currentFabricImage = <span class="hljs-keyword">this</span>.image,
+          darkroom           = <span class="hljs-keyword">this</span>,
+          options            = <span class="hljs-keyword">this</span>.options,
+          canvas             = <span class="hljs-keyword">this</span>.canvas;
+
+      <span class="hljs-keyword">var</span> height = <span class="hljs-keyword">this</span>.getHeight(newFabricImage.getHeight()),
+          width  = <span class="hljs-keyword">this</span>.getWidth(newFabricImage.getWidth());
+
+      Darkroom.util
+        .makeStatic(newFabricImage)
+        .set({width: width, height: height});
+
+      canvas.remove(currentFabricImage);
+
+      canvas
+        .add(newFabricImage)
+        .setHeight(height)
+        .setWidth(width);
+
+      newFabricImage.moveTo(<span class="hljs-number">0</span>);
+      darkroom.image = newFabricImage;
+    },
+
+    getHeight: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(height)</span> </span>{
+      <span class="hljs-keyword">var</span> options = <span class="hljs-keyword">this</span>.options;
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.min(<span class="hljs-built_in">Math</span>.max(options.minHeight, height), options.maxHeight);
+    },
+
+    getWidth : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(width)</span> </span>{
+      <span class="hljs-keyword">var</span> options = <span class="hljs-keyword">this</span>.options;
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.min(<span class="hljs-built_in">Math</span>.max(options.minWidth, width), options.maxWidth);
+    }
+  };
+
+})(<span class="hljs-built_in">window</span>, <span class="hljs-built_in">window</span>.document, fabric);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
